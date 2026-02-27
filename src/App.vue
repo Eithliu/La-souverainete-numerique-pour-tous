@@ -1,4 +1,22 @@
-<script setup></script>
+<script setup>
+import { computed, ref } from "vue";
+import Questions from "./components/Questions.vue";
+import { vConfetti } from "@neoconfetti/vue";
+import RightIcon from "./assets/RightIcon.vue";
+
+const showQuestions = ref(false);
+const count = ref(0);
+const isClicked = ref(false);
+
+const questions = [
+  "J'utilise Google Chrome",
+  "J'utilise un compte Gmail/YouTube",
+  "J'utilise Notion ou OneNote ou Google Docs",
+  "J'ai un compte sur l'un de ces réseaux: Facebook, Instagram, Twitter, Snapchat, WhatsApp",
+  "J'ai un ordinateur (principal) sous Windows ou MacOS",
+  "J'ai une carte Visa ou Mastercard",
+];
+</script>
 
 <template>
   <header>
@@ -7,8 +25,22 @@
   <main>
     <h1>La souveraineté numérique chez soi</h1>
     <h2>La MeJ qui te fait reprendre la main sur tes données</h2>
-    <button>Mais d'abord, un petit Quiz !</button>
+    <button v-if="!showQuestions" @click.prevent="showQuestions = true">
+      Mais d'abord, un petit Quiz !
+    </button>
+    <ul>
+      <Questions :questions v-if="showQuestions" @like="count++" @dislike="" />
+    </ul>
+    <button v-if="showQuestions" @click="isClicked = true">Calculer mes résultats</button>
+    <h2 v-if="isClicked">
+      Félicitations ! {{ count }} / {{ questions.length }} services que vous utilisez sont basés aux
+      USA !
+    </h2>
+    <div class="navigation">
+      <RightIcon @click="next" class="icon" color="rgb(86 86 92)" />
+    </div>
   </main>
+  <div class="confettis" v-if="isClicked" v-confetti></div>
 </template>
 
 <style>
@@ -22,6 +54,11 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 15px;
+}
+
+li:not(:last-child) {
+  margin-bottom: 10px;
 }
 
 h1,
@@ -47,5 +84,20 @@ button {
   border-radius: 5px;
   width: fit-content;
   margin: auto;
+  cursor: pointer;
+}
+
+ul {
+  text-align: center;
+}
+
+.navigation {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon {
+  width: 40px;
+  cursor: pointer;
 }
 </style>
