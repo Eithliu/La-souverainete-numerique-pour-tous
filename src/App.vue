@@ -1,12 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from "vue";
 import Questions from "./components/Questions.vue";
-import { vConfetti } from "@neoconfetti/vue";
-import RightIcon from "./assets/RightIcon.vue";
+import Why from "./components/Why.vue";
+import SmallSteps from "./components/SmallSteps.vue";
 
-const showQuestions = ref(false);
 const count = ref(0);
-const isClicked = ref(false);
+const showPage = ref<Page>(undefined);
+
+type Page = "quiz" | "choices" | "small-steps" | "my-small-steps";
+
+const quizPageShown = usePageShown("quiz");
+const choicesPageShown = usePageShown("choices");
+const smallStepsPageShown = usePageShown("small-steps");
+const mySmallStepsPageShown = usePageShown("my-small-steps");
+
+function usePageShown(page: Page) {
+  return computed({
+    get: () => showPage.value === page,
+    set() {
+      showPage.value = page;
+    },
+  });
+}
 
 const questions = [
   "J'utilise Google Chrome",
@@ -23,24 +38,28 @@ const questions = [
     <title>La souveraineté numérique chez soi</title>
   </header>
   <main>
+    <nav>
+      <ul class="navigation-menu">
+        <li>
+          <button @click="quizPageShown = true">Quiz</button>
+        </li>
+        <li>
+          <button @click="choicesPageShown = true">Pourquoi</button>
+        </li>
+        <li>
+          <button @click="smallStepsPageShown = true">Les petits pas</button>
+        </li>
+        <li>
+          <button @click="mySmallStepsPageShown = true">Mes petits pas</button>
+        </li>
+      </ul>
+    </nav>
     <h1>La souveraineté numérique chez soi</h1>
     <h2>La MeJ qui te fait reprendre la main sur tes données</h2>
-    <button v-if="!showQuestions" @click.prevent="showQuestions = true">
-      Mais d'abord, un petit Quiz !
-    </button>
-    <ul>
-      <Questions :questions v-if="showQuestions" @like="count++" @dislike="" />
-    </ul>
-    <button v-if="showQuestions" @click="isClicked = true">Calculer mes résultats</button>
-    <h2 v-if="isClicked">
-      Félicitations ! {{ count }} / {{ questions.length }} services que vous utilisez sont basés aux
-      USA !
-    </h2>
-    <div class="navigation">
-      <RightIcon @click="next" class="icon" color="rgb(86 86 92)" />
-    </div>
+    <Questions :questions v-if="quizPageShown" @like="count++" @dislike="" />
+    <Why v-if="choicesPageShown" />
+    <SmallSteps text="Google Chrome" logo="./assets/google.png" />
   </main>
-  <div class="confettis" v-if="isClicked" v-confetti></div>
 </template>
 
 <style>
@@ -57,8 +76,20 @@ main {
   gap: 15px;
 }
 
-li:not(:last-child) {
-  margin-bottom: 10px;
+nav {
+  display: flex;
+}
+
+.navigation-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 h1,
@@ -76,7 +107,7 @@ h2 {
   font-size: 20px;
 }
 
-button {
+.show-result {
   padding: 0.8rem 1.5rem;
   border: none;
   background: #5e6c84;
@@ -85,10 +116,6 @@ button {
   width: fit-content;
   margin: auto;
   cursor: pointer;
-}
-
-ul {
-  text-align: center;
 }
 
 .navigation {
