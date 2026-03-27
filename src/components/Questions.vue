@@ -28,7 +28,7 @@ function handleClick() {
       </div>
     </li>
   </ul>
-  <button class="show-result" @click="handleClick">Calculer mes résultats</button>
+  <button v-if="!isClicked" class="show-result" @click="handleClick">Calculer mes résultats</button>
   <h2 v-if="isClicked">
     Félicitations ! {{ count }} / {{ questions.length }} services que vous utilisez sont basés aux
     USA !

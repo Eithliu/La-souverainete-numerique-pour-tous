@@ -13,7 +13,7 @@ defineProps({
       L 4,14
     "
       :stroke="`${color ? color : '#fff'}`"
-      stroke-width="1.5"
+      stroke-width="3"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
